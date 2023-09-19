@@ -11,7 +11,7 @@ public class TomcatStatus extends HttpServlet {
 
     public void init() {
         try{
-            Process process =Runtime.getRuntime().exec("sudo systemctl status tomcat");
+            Process process =Runtime.getRuntime().exec("env");
             BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder stringBuilder=new StringBuilder();
             String line;
