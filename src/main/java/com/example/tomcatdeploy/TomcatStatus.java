@@ -10,23 +10,32 @@ public class TomcatStatus extends HttpServlet {
     private String message;
 
     public void init() {
-        try{
-            Process process =Runtime.getRuntime().exec("env");
-            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder stringBuilder=new StringBuilder();
+        try {
+            // Создаем процесс для выполнения команды sudo systemctl status tomcat
+            ProcessBuilder processBuilder = new ProcessBuilder("sudo", "systemctl", "status", "tomcat");
+            processBuilder.redirectErrorStream(true); // Перенаправляем stderr в stdout
+            Process process = processBuilder.start();
+
+            // Читаем вывод команды
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder commandOutput = new StringBuilder();
             String line;
-            while (bufferedReader.readLine()!=null) {
-                stringBuilder.append(bufferedReader.readLine()).append("<br>");
-
-
+            while ((line = reader.readLine()) != null) {
+                commandOutput.append(line).append("<br>");
             }
-            bufferedReader.close();
-            message="<h1><%= \"Tomcat status\" %></h1><br>"+stringBuilder.toString();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+            reader.close();
 
-    }
+            // Ожидаем завершения процесса
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                message = "Command Output:<br>" + commandOutput.toString();
+            } else {
+                message = "Command Failed with Exit Code: " + exitCode;
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }}
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
