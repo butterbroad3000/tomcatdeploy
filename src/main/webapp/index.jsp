@@ -9,5 +9,7 @@
 </h1>
 <br/>
 <a href="hello-servlet">Hello Servlet</a>
+<br>
+<a href="tomcat-status"> tomcat status check</a>
 </body>
 </html>
